@@ -1,10 +1,11 @@
 import java.net.*;
 import java.io.*;
+import java.util.*;
 
 public class client {
 
 	private static void menu() {
-		System.out.println("MENU CLIENTE\n\n");
+		System.out.println("MENU CLIENTE\n");
 		System.out.println("0  - Menu inicial");
 		System.out.println("1  - Listar utilizadores online");
 		System.out.println("2  - Enviar mensagem a um utilizador");
@@ -16,19 +17,19 @@ public class client {
 
 
 
-	public static void public static void main(String[] args) {
-		private Scanner scanner = new Scanner(System.in);
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
 
 		// menu cliente
 		menu();
-			
+		String input = scanner.nextLine();
+
 		do {
-			String input = scanner.nextLine()
 			
 			switch(input) {
 				case "0":
 					menu();
-					break;
+				 	break;
 
 				case "1":
 					break;
@@ -45,6 +46,8 @@ public class client {
 				case "5":
 					break;
 			}
+
+			input = scanner.nextLine();
 
 		} while(input != "99");
 		
