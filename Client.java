@@ -4,8 +4,6 @@ import java.util.*;
 
 public class Client {
 	private static ArrayList<ClientTCP> list_clients = new ArrayList<>();
-	private static String localhost = "127.0.0.1";
-		
 
 	private static void menu() {
 		System.out.println("MENU CLIENTE\n");
@@ -18,20 +16,23 @@ public class Client {
 		System.out.println("99 - Sair\n");
 	}	
 
-	private static void usersList(ArrayList list) {
+	private static void usersList(ArrayList<ClientTCP> list) {
 		
 		//list all connected clients
 		for(int i = 0; i < list.size(); i++) {
-			System.out.println(i + " - " + list.get(i) + "\n");
+			// print host address
+			System.out.println(i + " - " + list.get(i).getClientAddr().getHostAddress() + "\n");
 		}
 	}
 
 
 	public static void main(String[] args) {
-		ClientTCP client = new ClientTCP(localhost, 7142);
+		ClientTCP client = new ClientTCP("127.0.0.1", 7142);
 
 		// client is connected
-		list_clients.add(client);
+		if(client.getClientAddr() != null) {
+			list_clients.add(client);
+		}
 
 		Scanner scanner = new Scanner(System.in);
 
@@ -40,14 +41,13 @@ public class Client {
 		String input = scanner.nextLine();
 
 		do {
-			
 			switch(input) {
 				case "0":
 					menu();
 				 	break;
 
 				case "1":
-					System.out.println("Utilizadores online:\n");
+					System.out.println("Utilizadores online:");
 					usersList(list_clients);
 					break;
 
@@ -67,6 +67,7 @@ public class Client {
 			input = scanner.nextLine();
 
 		} while(input != "99");
-		
+
+		scanner.close();
 	}
 }

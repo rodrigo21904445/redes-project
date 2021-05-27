@@ -1,10 +1,11 @@
+import java.util.ArrayList;
 import java.util.List;
 
-public class data {
+public class Data {
 	private List<String> white_list;
 	private List<String> black_list;
 
-	public data() {
+	public Data() {
 		white_list = new ArrayList<>();
 		black_list = new ArrayList<>();
 	}

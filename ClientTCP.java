@@ -17,16 +17,23 @@ public class ClientTCP {
 			// establish connection 
 			socket = new Socket(addr, port);
 		
-		} catch(UnknownHostException e) {
-			System.out.println("Waiting for connection...");
-			
 		} catch (IOException i){
 			System.out.println("Waiting for connection...");
 		}
 	}
 
-	public String getClientAddr() {
-		return addr;
+	public InetAddress getClientAddr() {
+		try {
+			// return local host
+			return InetAddress.getLocalHost();
+		} catch(IOException e) {
+			System.out.println("Error: address of client");
+		}
+
+		return null;
 	}
 
+	public static void main(String[] args) {
+
+	}
 }
