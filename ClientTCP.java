@@ -32,8 +32,4 @@ public class ClientTCP {
 
 		return null;
 	}
-
-	public static void main(String[] args) {
-
-	}
 }

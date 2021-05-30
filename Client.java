@@ -28,7 +28,7 @@ public class Client {
 
 	public static void main(String[] args) {
 		ClientTCP client = new ClientTCP("127.0.0.1", 7142);
-
+		
 		// client is connected
 		if(client.getClientAddr() != null) {
 			list_clients.add(client);
@@ -52,6 +52,8 @@ public class Client {
 					break;
 
 				case "2":
+					System.out.println("Que utilizador?\n");
+					input = scanner.nextLine();
 					break;
 
 				case "3":

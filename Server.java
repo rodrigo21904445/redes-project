@@ -2,8 +2,14 @@ import java.net.*;
 import java.io.*;
 
 public class Server {
+	public static Data data;
+
+	public static Data getData() {
+		return data;
+	}
 
 	public static void main(String[] args) {
+		data = new Data();
 		ServerSocket server = null;
 
 		try {
@@ -12,7 +18,7 @@ public class Server {
 			System.out.println("Server started on port 7142...");
 
 		} catch (IOException i) {
-			System.out.println("Erro");
+			System.out.println("Erro: starting server");
 		}
 
 		// initialize socket
@@ -25,6 +31,12 @@ public class Server {
 				if(server != null) {
 					socket = server.accept();
 				}
+
+				// create new thread
+				Thread thread = new ClientThread(socket, data);
+
+				// run the thread
+				thread.start();
 			} catch(IOException i) {
 				System.out.println("Error: server error");
 			}
