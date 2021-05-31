@@ -25,10 +25,39 @@ public class Client {
 		}
 	}
 
+	private static void sendMessageToUser(Socket socket, ClientTCP user, String message) {
 
-	public static void main(String[] args) {
-		ClientTCP client = new ClientTCP("127.0.0.1", 7142);
-		
+		try{
+			PrintStream output = new PrintStream(socket.getOutputStream(), true);
+			String messageOut = user.getClientAddr().getHostAddress() + "@" + message;
+
+			output.println(messageOut);
+		} catch(IOException e) {
+			System.out.println("Error: sending message to user");
+		}
+	}
+
+	private static void sendMessageToAllUsers(Socket socket, String message) {
+
+		try {
+			PrintStream output = new PrintStream(socket.getOutputStream(), true);
+
+			output.println(message);
+		} catch(IOException e) {
+			System.out.println("Error: sending message to all users");
+		}
+	}
+
+	public static void main(String[] args) throws UnknownHostException, SocketException {
+		ClientTCP client = new ClientTCP(InetAddress.getLocalHost().getHostAddress(), 7142);
+		ClientUDP clientUDP = new ClientUDP(InetAddress.getLocalHost());
+
+		try {
+			clientUDP.receiveMessage();
+		} catch (IOException e) {
+			System.out.println("Error: receiving message by udp");
+		}
+
 		// client is connected
 		if(client.getClientAddr() != null) {
 			list_clients.add(client);
@@ -53,10 +82,16 @@ public class Client {
 
 				case "2":
 					System.out.println("Que utilizador?\n");
-					input = scanner.nextLine();
+					int user = Integer.parseInt(scanner.nextLine());
+					System.out.println("Qual é a mensagem?\n");
+					String messageToUser = scanner.nextLine();
+					sendMessageToUser(client.getSocket(), list_clients.get(user), messageToUser);
 					break;
 
 				case "3":
+					System.out.println("Qual é a mensagem?\n");
+					String messageToAllUsers = scanner.nextLine();
+					sendMessageToAllUsers(client.getSocket(), messageToAllUsers);
 					break;
 
 				case "4":

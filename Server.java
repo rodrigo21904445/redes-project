@@ -4,10 +4,6 @@ import java.io.*;
 public class Server {
 	public static Data data;
 
-	public static Data getData() {
-		return data;
-	}
-
 	public static void main(String[] args) {
 		data = new Data();
 		ServerSocket server = null;

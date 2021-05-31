@@ -32,4 +32,8 @@ public class ClientTCP {
 
 		return null;
 	}
+
+	public Socket getSocket() {
+		return socket;
+	}
 }
