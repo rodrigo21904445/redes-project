@@ -19,6 +19,10 @@ public class Data {
 		hash_clients = new HashMap<>();
 	}
 
+	public HashMap<InetAddress, Boolean> getHashClients() {
+		return hash_clients;
+	}
+
 	public boolean checkClient(InetAddress ip) {
 
 		if(!hash_clients.containsKey(ip)) {

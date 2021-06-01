@@ -19,16 +19,4 @@ public class EchoClientUdp {
         DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 9031);
         socket.send(packet);
     }
-/*
-    public static void main(String[] args) {
-        try {
-            EchoClientUdp client = new EchoClientUdp(address.toString(), message);
-            client.sendEcho(client.message);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }*/
 }
