@@ -4,6 +4,7 @@ import java.util.*;
 
 public class Client {
 	private static ArrayList<ClientTCP> list_clients = new ArrayList<>();
+	private static ArrayList<InetAddress> list_clients_online = new ArrayList<>();
 
 	private static void menu() {
 		System.out.println("MENU CLIENTE\n");
@@ -13,15 +14,31 @@ public class Client {
 		System.out.println("3  - Enviar mensagem a todos os utilizadores");
 		System.out.println("4  - Lista branca de utilizadores");
 		System.out.println("5  - Lista negra de utilizadores");
-		System.out.println("99 - Sair\n");
+		System.out.println("99 - Sair");
 	}	
 
-	private static void usersList(ArrayList<ClientTCP> list) {
-		
+	private static void usersList(ArrayList<InetAddress> list, Socket socket, ClientTCP user) {
+
+		try{
+			PrintStream output = new PrintStream(socket.getOutputStream(), true);
+			String messageOut = user.getClientAddr().getHostAddress() + "@list_users_online";
+
+			output.println(messageOut);
+
+			BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			String messageIn = input.readLine();
+
+			// client is connected
+			list_clients_online.add(InetAddress.getByName(messageIn));
+
+		} catch(IOException e) {
+			System.out.println("Error: list users online");
+		}
+
 		//list all connected clients
 		for(int i = 0; i < list.size(); i++) {
 			// print host address
-			System.out.println(i + " - " + list.get(i).getClientAddr().getHostAddress() + "\n");
+			System.out.println(i + " - " + list.get(i).getHostAddress() + "\n");
 		}
 	}
 
@@ -50,18 +67,6 @@ public class Client {
 
 	public static void main(String[] args) throws UnknownHostException, SocketException {
 		ClientTCP client = new ClientTCP(InetAddress.getLocalHost().getHostAddress(), 7142);
-		ClientUDP clientUDP = new ClientUDP(InetAddress.getLocalHost());
-
-		try {
-			clientUDP.receiveMessage();
-		} catch (IOException e) {
-			System.out.println("Error: receiving message by udp");
-		}
-
-		// client is connected
-		if(client.getClientAddr() != null) {
-			list_clients.add(client);
-		}
 
 		Scanner scanner = new Scanner(System.in);
 
@@ -70,6 +75,8 @@ public class Client {
 		String input = scanner.nextLine();
 
 		do {
+			// menu client
+			menu();
 			switch(input) {
 				case "0":
 					menu();
@@ -77,13 +84,13 @@ public class Client {
 
 				case "1":
 					System.out.println("Utilizadores online:");
-					usersList(list_clients);
+					usersList(list_clients_online, client.getSocket(), client);
 					break;
 
 				case "2":
-					System.out.println("Que utilizador?\n");
+					System.out.println("Que utilizador?");
 					int user = Integer.parseInt(scanner.nextLine());
-					System.out.println("Qual é a mensagem?\n");
+					System.out.println("Qual é a mensagem?");
 					String messageToUser = scanner.nextLine();
 					sendMessageToUser(client.getSocket(), list_clients.get(user), messageToUser);
 					break;

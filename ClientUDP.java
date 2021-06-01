@@ -3,50 +3,38 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public class ClientUDP {
-    private final int port = 9031;
     private DatagramSocket socket;
-    private InetAddress host;
-    private DatagramPacket inPacket, outPacket;
+    private boolean running;
+    private byte[] buf = new byte[256];
 
-    public ClientUDP(InetAddress host) throws SocketException{
-        this.host = host;
-        socket = new DatagramSocket(port);
+    public ClientUDP() throws SocketException {
+        socket = new DatagramSocket(9031);
     }
 
-    public void sendMessage(String message) throws IOException{
-        try {
-            // create new packet
-            outPacket = new DatagramPacket(message.getBytes(), message.length(), host, port);
+    public void run() {
+        running = true;
 
-            // send packet
-            socket.send(outPacket);
-        } catch(IOException e) {
-            System.out.println("Error: sending datagram packet");
-        } finally {
-            socket.close();
+        while (running) {
+            try {
+                DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                socket.receive(packet);
+
+                InetAddress address = packet.getAddress();
+                int port = packet.getPort();
+                packet = new DatagramPacket(buf, buf.length, address, port);
+                String received
+                        = new String(packet.getData(), 0, packet.getLength());
+
+                System.out.println(received);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        socket.close();
     }
 
-    public void receiveMessage() throws IOException {
-        try {
-            String messageReceived;
-
-            // create new buffer to receive message
-            byte[] buffer = new byte[256];
-
-            // create new packet to receive
-            inPacket = new DatagramPacket(buffer, buffer.length);
-
-            // receive packet
-            socket.receive(inPacket);
-
-            // print message
-            messageReceived = new String(inPacket.getData(), 0, inPacket.getLength());
-            System.out.println(messageReceived);
-        } catch(IOException e) {
-            System.out.println("Error: receiving datagram packet");
-        } finally {
-            socket.close();
-        }
+    public static void main(String[] args) throws SocketException {
+        ClientUDP client = new ClientUDP();
+        client.run();
     }
 }

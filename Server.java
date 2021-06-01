@@ -1,8 +1,10 @@
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
 
 public class Server {
 	public static Data data;
+	private static ArrayList<ClientTCP> list_clients = new ArrayList<>();
 
 	public static void main(String[] args) {
 		data = new Data();
@@ -16,16 +18,17 @@ public class Server {
 		} catch (IOException i) {
 			System.out.println("Erro: starting server");
 		}
-
 		// initialize socket
 		Socket socket = null;
 
 		while(true) {
 			// waits for connection
 			// receive socket
+
 			try {
 				if(server != null) {
 					socket = server.accept();
+
 				}
 
 				// create new thread
