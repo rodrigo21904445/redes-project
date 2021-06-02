@@ -2,7 +2,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.lang.reflect.Array;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,16 +12,27 @@ public class ClientThread extends Thread{
     private Socket socket = null;
     private Data data;
     private static DatagramPacket outPacket;
+    private ArrayList<InetAddress> list_users_online;
 
     public ClientThread(Socket socket, Data data) {
         this.socket = socket;
         this.data = data;
+        list_users_online = new ArrayList<>();
     }
 
-    public static void sendMessageUDP(String messageToSend, InetAddress ip) throws IOException {
+    public void sendMessageUDP(String messageToSend, InetAddress ip) throws IOException {
         EchoClientUdp clientUdp = new EchoClientUdp(ip.getHostName(), messageToSend);
         EchoClientUdp.sendEcho(messageToSend);
     }
+
+    public void sendMessageUDPToAllUsers(String messageToSend) throws IOException {
+
+        for (InetAddress ip: list_users_online) {
+            EchoClientUdp clientUdp = new EchoClientUdp(ip.getHostName(), messageToSend);
+            EchoClientUdp.sendEcho(messageToSend);
+        }
+    }
+
 
     @Override
     public void run() {
@@ -41,8 +54,9 @@ public class ClientThread extends Thread{
                 BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String messageIn = input.readLine();
                 System.out.println(messageIn);
-                InetAddress userIp = InetAddress.getByName(messageIn.split("@")[0]);
-                System.out.println("hmmmmmmmmmmmmm");
+                System.out.println("ya");
+                //InetAddress userIp = InetAddress.getByName(messageIn.split("@")[0]);
+                System.out.println("ya1");
                 String messageToSend = messageIn.split("@")[1];
 
                 if(messageToSend.equals("list_users_online")) {
@@ -53,11 +67,17 @@ public class ClientThread extends Thread{
                     for(Map.Entry i: data.getHashClients().entrySet()) {
                         if(data.checkClient((InetAddress) i.getKey())) {
                             messageOut += ((InetAddress)i.getKey()).toString() + "@";
+                            list_users_online.add((InetAddress)i.getKey());
                         }
                     }
 
                     output.println(messageOut);
-                } else {
+                } else if(messageIn.split("@")[0].equals("messageToAllUsers")) {
+                    sendMessageUDPToAllUsers(messageToSend);
+                } else if(messageIn.split("@")[0].equals("desconnectClient")) {
+                    socket.close();
+                } else{
+                    InetAddress userIp = InetAddress.getByName(messageIn.split("@")[0]);
                     sendMessageUDP(messageToSend, userIp);
                 }
 

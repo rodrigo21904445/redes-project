@@ -14,7 +14,7 @@ public class Client {
 		System.out.println("3  - Enviar mensagem a todos os utilizadores");
 		System.out.println("4  - Lista branca de utilizadores");
 		System.out.println("5  - Lista negra de utilizadores");
-		System.out.println("99 - Sair");
+		System.out.println("99 - Sair\n");
 	}	
 
 	private static void usersList(ArrayList<InetAddress> list, Socket socket, ClientTCP user) {
@@ -51,6 +51,7 @@ public class Client {
 			String messageOut = user.getHostAddress() + "@" + message;
 
 			output.println(messageOut);
+			System.out.println("OK, mensagem enviada a " + user.getHostAddress() + "\n");
 		} catch(IOException e) {
 			System.out.println("Error: sending message to user");
 		}
@@ -60,8 +61,10 @@ public class Client {
 
 		try {
 			PrintStream output = new PrintStream(socket.getOutputStream(), true);
+			String messageOut = "messageToAllUsers@" + message;
 
-			output.println(message);
+			output.println(messageOut);
+			System.out.println("OK, mensagem enviada a todos os utilizadores\n");
 		} catch(IOException e) {
 			System.out.println("Error: sending message to all users");
 		}
@@ -76,11 +79,10 @@ public class Client {
 
 		// menu client
 		menu();
+		System.out.println("Opção?");
 		String input = scanner.nextLine();
 
 		do {
-			// menu client
-			menu();
 			switch(input) {
 				case "0":
 					menu();
@@ -105,7 +107,7 @@ public class Client {
 					break;
 
 				case "3":
-					System.out.println("Qual é a mensagem?\n");
+					System.out.println("Qual é a mensagem?");
 					String messageToAllUsers = scanner.nextLine();
 					sendMessageToAllUsers(client.getSocket(), messageToAllUsers);
 					break;
@@ -117,11 +119,13 @@ public class Client {
 					break;
 
 				case "99":
-					// send message via TCP to server to end connection
-					client.getSocket().close();
+					PrintStream output = new PrintStream(client.getSocket().getOutputStream(), true);
+					output.println("desconnectClient@");
+					System.out.println("Client Desconectado...");
 					System.exit(0);
 			}
 
+			System.out.println("Opção?");
 			input = scanner.nextLine();
 
 		} while(!input.equals("99"));
