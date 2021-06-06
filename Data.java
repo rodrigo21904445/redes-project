@@ -19,6 +19,14 @@ public class Data {
 		hash_clients = new HashMap<>();
 	}
 
+	public List<InetAddress> getWhiteList() {
+		return white_list;
+	}
+
+	public List<InetAddress> getBlackList() {
+		return black_list;
+	}
+
 	public HashMap<InetAddress, Boolean> getHashClients() {
 		return hash_clients;
 	}
@@ -62,13 +70,14 @@ public class Data {
 		hash_clients.put(ip, state);
 	}
 
-	private void readBlackList() {
+	public void readBlackList() {
 		try {
 			File blackFile = new File("blackList.txt");
 			Scanner scanner = new Scanner(blackFile);
 
 			while(scanner.hasNextLine()) {
 				String ip = scanner.nextLine();
+
 				if(!black_list.contains(InetAddress.getByName(ip))) {
 					black_list.add(InetAddress.getByName(ip));
 				}
@@ -82,7 +91,7 @@ public class Data {
 		}
 	}
 
-	private void readWhiteList() {
+	public void readWhiteList() {
 		try {
 			File whiteFile = new File("whiteList.txt");
 			Scanner scanner = new Scanner(whiteFile);
@@ -113,6 +122,10 @@ public class Data {
 
 			writer.write(ip.getHostAddress());
 
+			if(!black_list.contains(ip)) {
+				black_list.add(ip);
+			}
+
 			writer.close();
 		} catch (IOException e) {
 			System.out.println("Error: write on black list file");
@@ -129,6 +142,10 @@ public class Data {
 			FileWriter writer =  new FileWriter(whiteFile);
 
 			writer.write(ip.getHostAddress());
+
+			if(!white_list.contains(ip)) {
+				white_list.add(ip);
+			}
 
 			writer.close();
 		} catch (IOException e) {

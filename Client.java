@@ -28,8 +28,10 @@ public class Client {
 			BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			String messageIn = input.readLine();
 
-			for(String message: messageIn.split("@")) {
-				list.add(InetAddress.getByName(message.split("/")[1]));
+			if(messageIn != null) {
+				for(String message: messageIn.split("@")) {
+					list.add(InetAddress.getByName(message.split("/")[1]));
+				}
 			}
 
 		} catch(IOException e) {
@@ -113,14 +115,37 @@ public class Client {
 					break;
 
 				case "4":
+					System.out.println("Lista branca:");
+					PrintStream outputWhiteList = new PrintStream(client.getSocket().getOutputStream(), true);
+					outputWhiteList.println("whiteList@whiteList");
+
+					BufferedReader inputWhiteList = new BufferedReader(new InputStreamReader(client.getSocket().getInputStream()));
+					String messageInWhiteList = inputWhiteList.readLine();
+
+					for(String message: messageInWhiteList.split("@")) {
+						System.out.println(message);
+					}
+
 					break;
 
 				case "5":
+					System.out.println("Lista negra:");
+					PrintStream outputBlackList = new PrintStream(client.getSocket().getOutputStream(), true);
+					outputBlackList.println("blackList@blackList");
+
+					BufferedReader inputBlackList = new BufferedReader(new InputStreamReader(client.getSocket().getInputStream()));
+					String messageInBlackList = inputBlackList.readLine();
+
+					for(String message: messageInBlackList.split("@")) {
+						System.out.println(message);
+					}
+
 					break;
 
 				case "99":
 					PrintStream output = new PrintStream(client.getSocket().getOutputStream(), true);
 					output.println("desconnectClient@");
+					System.out.println("A sair");
 					System.out.println("Client Desconectado...");
 					System.exit(0);
 			}

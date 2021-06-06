@@ -40,6 +40,12 @@ public class ClientThread extends Thread{
         // if it is, close the connection
         while(true) {
             try {
+
+                while(socket == null) {
+                    System.out.println("Waiting for connection");
+                    Thread.sleep(10000);
+                }
+
                 InetAddress addr = socket.getInetAddress();
 
                 if(data.checkBlackList(addr)) {
@@ -50,13 +56,10 @@ public class ClientThread extends Thread{
                 }
 
                 data.putHashClient(addr, true);
+                data.writeWhiteList(addr);
 
                 BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String messageIn = input.readLine();
-                System.out.println(messageIn);
-                System.out.println("ya");
-                //InetAddress userIp = InetAddress.getByName(messageIn.split("@")[0]);
-                System.out.println("ya1");
                 String messageToSend = messageIn.split("@")[1];
 
                 if(messageToSend.equals("list_users_online")) {
@@ -74,15 +77,42 @@ public class ClientThread extends Thread{
                     output.println(messageOut);
                 } else if(messageIn.split("@")[0].equals("messageToAllUsers")) {
                     sendMessageUDPToAllUsers(messageToSend);
+
                 } else if(messageIn.split("@")[0].equals("desconnectClient")) {
                     socket.close();
+
+                } else if(messageIn.split("@")[0].equals("whiteList")) {
+                    String messageWhiteList = "";
+                    PrintStream outputWhiteList = new PrintStream(socket.getOutputStream(), true);
+
+                    for(InetAddress ip: data.getWhiteList()) {
+                        messageWhiteList += ip.getHostAddress() + "@";
+                    }
+
+                    outputWhiteList.println(messageWhiteList);
+
+                } else if(messageIn.split("@")[0].equals("blackList")) {
+                    data.readBlackList();
+
+                    String messageBlackList = "";
+                    PrintStream outputBlackList = new PrintStream(socket.getOutputStream(), true);
+
+                    for(InetAddress ip: data.getBlackList()) {
+                        messageBlackList += ip.getHostAddress() + "@";
+                    }
+
+                    //System.out.println(messageBlackList);
+                    outputBlackList.println(messageBlackList);
+
                 } else{
                     InetAddress userIp = InetAddress.getByName(messageIn.split("@")[0]);
                     sendMessageUDP(messageToSend, userIp);
                 }
 
-            } catch (IOException e) {
+            } catch (IOException  e) {
                 System.out.println("Error: client is on black list");
+            } catch (InterruptedException i) {
+                System.out.println("Error: waiting for connection");
             }
         }
     }
